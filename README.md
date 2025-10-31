@@ -2,7 +2,7 @@
 
 **Version:** v1.0
 
-A lightweight Python tool that lets you make any window (like LEGO Worlds) **borderless and fullscreen** on Windows. Built with Tkinter, PyGetWindow, and PyWin32.
+A lightweight tool that lets you make any window (like LEGO Worlds) **borderless and fullscreen** on Windows. Built with Python.
 
 ## Features
 
