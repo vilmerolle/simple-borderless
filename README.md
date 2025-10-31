@@ -13,7 +13,7 @@ A lightweight tool that lets you make any window (like LEGO Worlds) **borderless
 
 ## Usage
 
-1. Go to releases and download simple_borderless.exe.
+1. Go to [releases](https://github.com/vilmerolle/simple-borderless/releases/) and download simple_borderless.exe.
 
 
 2. Run `simple_borderless.exe`:
