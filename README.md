@@ -11,24 +11,12 @@ A lightweight Python tool that lets you make any window (like LEGO Worlds) **bor
 - Logs actions in a GUI console.
 - Refresh window list dynamically.
 
-## Requirements
-
-- Python 3.x
-- pywin32
-- pygetwindow
-
-Install dependencies via pip:
-
-pip install pywin32 pygetwindow
-
 ## Usage
 
-1. Run `simple_borderless.py`:
+1. Go to releases and download simple_borderless.exe.
 
-python simple_borderless.py
-2. Select the window you want to make borderless from the dropdown.
-3. Click **"🔄 Refresh List"** to update the window list.
-4. Click **"🪟 Make Borderless"** to remove the window border and maximize.
+
+2. Run `simple_borderless.exe`:
 
 ## Notes
 
@@ -37,17 +25,4 @@ python simple_borderless.py
 - No modification of the target application is performed.
 - Can be converted to an EXE using PyInstaller:
 
-pyinstaller --onefile --windowed simple_borderless.py
 
-## License
-
-MIT License
-
-3️⃣ .gitignore
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.exe
-dist/
-build/
