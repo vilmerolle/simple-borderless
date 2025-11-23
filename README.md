@@ -23,6 +23,6 @@ A lightweight tool that lets you make any window (like LEGO Worlds) **borderless
 - Works best with games running in **windowed mode**.
 - Compatible with most Windows applications.
 - No modification of the target application is performed.
-- Can be converted to an EXE using PyInstaller:
+
 
 
