@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Borderless Fullscreen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #090b0f;
+      --bg2: #0d1117;
+      --grid: rgba(0,255,180,0.04);
+      --accent: #00ffb3;
+      --accent2: #00c8ff;
+      --dim: rgba(0,255,179,0.45);
+      --text: #c8d8d0;
+      --mono: 'Share Tech Mono', monospace;
+      --sans: 'Rajdhani', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+
+    /* ── grid background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── scanline overlay ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── corner brackets ── */
+    .corner {
+      position: fixed;
+      width: 32px; height: 32px;
+      z-index: 10;
+      opacity: 0.5;
+    }
+    .corner::before, .corner::after {
+      content: '';
+      position: absolute;
+      background: var(--accent);
+    }
+    .corner::before { width: 2px; height: 100%; }
+    .corner::after  { width: 100%; height: 2px; }
+    .corner.tl { top: 16px; left: 16px; }
+    .corner.tl::before { top: 0; left: 0; }
+    .corner.tl::after  { top: 0; left: 0; }
+    .corner.tr { top: 16px; right: 16px; transform: scaleX(-1); }
+    .corner.bl { bottom: 16px; left: 16px; transform: scaleY(-1); }
+    .corner.br { bottom: 16px; right: 16px; transform: scale(-1); }
+
+    /* ── layout ── */
+    main {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px 60px;
+      gap: 0;
+    }
+
+    /* ── status bar ── */
+    .status-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 24px;
+      background: rgba(9,11,15,0.85);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(0,255,180,0.1);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.08em;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 6px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── ASCII art ── */
+    .ascii-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 48px;
+      animation: fadeDown 0.9s ease both;
+      display: flex;
+      justify-content: center;
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    pre.ascii {
+      font-family: var(--mono);
+      font-size: clamp(5px, 1.1vw, 13px);
+      line-height: 1.2;
+      white-space: pre;
+      color: var(--accent);
+      text-shadow:
+        0 0 8px rgba(0,255,179,0.6),
+        0 0 20px rgba(0,255,179,0.25);
+      display: block;
+      text-align: center;
+    }
+
+    /* ── tagline ── */
+    .tagline {
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      animation: fadeUp 0.9s 0.2s ease both;
+    }
+
+    /* ── description ── */
+    .description {
+      font-family: var(--sans);
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: rgba(200,216,208,0.7);
+      max-width: 480px;
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 52px;
+      animation: fadeUp 0.9s 0.35s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── buttons ── */
+    .buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.9s 0.5s ease both;
+    }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      font-family: var(--mono);
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: all 0.2s ease;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .btn:hover::before { opacity: 0.08; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #060a08;
+      font-weight: 700;
+      box-shadow: 0 0 24px rgba(0,255,179,0.35), 0 0 2px rgba(0,255,179,0.8);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 36px rgba(0,255,179,0.55), 0 0 4px rgba(0,255,179,1);
+      transform: translateY(-2px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent2);
+      border: 1px solid rgba(0,200,255,0.4);
+      box-shadow: 0 0 12px rgba(0,200,255,0.1);
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent2);
+      box-shadow: 0 0 24px rgba(0,200,255,0.3);
+      transform: translateY(-2px);
+    }
+    .btn-secondary:active { transform: translateY(0); }
+
+    .btn svg {
+      flex-shrink: 0;
+    }
+
+    /* ── divider ── */
+    .divider {
+      width: 320px;
+      max-width: 90vw;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+      margin: 60px 0 32px;
+      opacity: 0.3;
+      animation: fadeUp 0.9s 0.65s ease both;
+    }
+
+    /* ── feature chips ── */
+    .features {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.9s 0.7s ease both;
+    }
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--dim);
+      border: 1px solid rgba(0,255,180,0.15);
+      padding: 5px 14px;
+      text-transform: uppercase;
+      clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+    }
+
+    /* ── footer ── */
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 20px 24px 24px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: rgba(200,216,208,0.2);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); opacity: 0.4; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- corners -->
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <!-- status bar -->
+  <div class="status-bar">
+    <span><span class="status-dot"></span>BORDERLESS_FULLSCREEN // ACTIVE</span>
+    <span>v1.0.0</span>
+  </div>
+
+  <main>
+    <!-- ASCII title -->
+    <div class="ascii-wrap">
+      <pre class="ascii">                ███████╗██╗███╗   ███╗██████╗ ██╗     ███████╗                   
+                ██╔════╝██║████╗ ████║██╔══██╗██║     ██╔════╝                   
+                ███████╗██║██╔████╔██║██████╔╝██║     █████╗                     
+                ╚════██║██║██║╚██╔╝██║██╔═══╝ ██║     ██╔══╝                     
+                ███████║██║██║ ╚═╝ ██║██║     ███████╗███████╗                   
+                ╚══════╝╚═╝╚═╝     ╚═╝╚═╝     ╚══════╝╚══════╝                   
+                                                                                 
+██████╗  ██████╗ ██████╗ ██████╗ ███████╗██████╗ ██╗     ███████╗███████╗███████╗
+██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██║     ██╔════╝██╔════╝██╔════╝
+██████╔╝██║   ██║██████╔╝██║  ██║█████╗  ██████╔╝██║     █████╗  ███████╗███████╗
+██╔══██╗██║   ██║██╔══██╗██║  ██║██╔══╝  ██╔══██╗██║     ██╔══╝  ╚════██║╚════██║
+██████╔╝╚██████╔╝██║  ██║██████╔╝███████╗██║  ██║███████╗███████╗███████║███████║
+╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝</pre>
+    </div>
+
+    <p class="tagline">// no borders. no limits. //</p>
+
+    <p class="description">
+      Run any window in true borderless fullscreen mode.
+      Break free from window chrome and take back every pixel of your screen.
+    </p>
+
+    <div class="buttons">
+      <a class="btn btn-primary" href="https://github.com/vilmer321/simple-borderless/releases/download/2.0/Simple-Borderless.exe" title="Download Borderless Fullscreen">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        DOWNLOAD
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/vilmer321/simple-borderless" title="View on GitHub" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+            -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+            .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+            -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
+            .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+            .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+            0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        GITHUB
+      </a>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="features">
+      <span class="chip">zero borders</span>
+      <span class="chip">any window</span>
+      <span class="chip">lightweight</span>
+      <span class="chip">open source</span>
+    </div>
+  </main>
+
+  <footer>
+    BORDERLESS_FULLSCREEN &nbsp;·&nbsp; MIT LICENSE &nbsp;·&nbsp; OPEN SOURCE
+  </footer>
+
+</body>
+</html>
